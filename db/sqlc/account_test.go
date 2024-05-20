@@ -4,15 +4,12 @@ import (
 	"context"
 	"math/rand"
 	"testing"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 
 	"github.com/px3303/simplebank/util"
 )
-
-var r = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func randomOwner() string {
 	return util.RandomString(6)
@@ -24,7 +21,7 @@ func randomBalance() int64 {
 
 func randomCurrency() string {
 	currencies := []string{"EUR", "USD", "CAD"}
-	return currencies[r.Intn(len(currencies))]
+	return currencies[rand.Intn(len(currencies))]
 }
 
 func createRandomAccount(t *testing.T) Account {

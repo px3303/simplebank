@@ -1,21 +1,18 @@
 NAME=
+ENV=local
 
 migrations_gen:
 ifeq ($(strip $(NAME)),)
 	$(error "missing migrate name")
 else
-	atlas migrate diff $(NAME) \
-		--dir "file://db/migrations" \
-		--to "file://db/hcl" \
-		--dev-url "docker://postgres/16-alpine" \
-		--format '{{ sql . "  " }}'
+	atlas migrate diff $(NAME) --env $(ENV)
 endif
 
-migrate_local:
-	atlas schema apply \
-  		--url "postgres://localhost:5432/simple_bank?sslmode=disable" \
- 		--to "file://db/migrations" \
-  		--dev-url "docker://postgres"
+migrations_hash:
+	atlas migrate hash --env $(ENV)
+
+migrate:
+	atlas migrate apply --env $(ENV)
 
 sqlc:
 	sqlc generate
@@ -29,4 +26,7 @@ postgres:
 createdb:
 	docker exec -it postgres16 createdb --username=root --owner=root simple_bank
 
-.PHONY: migrations_gen migrate_local sqlc postgres_init postgres createdb
+dropdb:
+	docker exec -it postgres16 dropdb simple_bank
+
+.PHONY: migrations_gen migrate sqlc postgres_init postgres createdb dropdb migrations_hash
